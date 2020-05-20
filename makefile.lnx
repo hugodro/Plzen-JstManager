@@ -1,0 +1,35 @@
+#/************************************************
+#* File: makefile.
+#* Desc: Building definitions for the Java object archiving library.
+PROJECT= JstManager
+VERSION= 0.1
+
+include $(AKRAPROJ)/geneMake.lnx
+
+CFLAGS= -g -DPLZEN_LEVEL_2 -DHACKED_ACCESS -DDEBUG_1 -fno-access-control
+
+
+SRCS= archiver.cpp fileArchiver.cpp \
+	classTable.cpp indexTable.cpp entryTable.cpp \
+	instanceList.cpp
+
+TESTOBJS= testArch.o
+
+
+TESTLIBPATH= -L. -L$(PLZENLIB)
+TESTLIBS= -ljstmgr -lPlzen -ldl -lpthread
+
+all: test
+
+libjstmgr.a: $(OBJS)
+	( cd $(OBJ_PATH) && \
+	    $(AR) cru $@ $(OBJS) && \
+	    $(RANLIB) $@ \
+	)
+
+
+test: libjstmgr.a $(TESTOBJS)
+	( cd $(OBJ_PATH) && \
+	    $(CPP) $(CFLAGS) -o tArch $(TESTOBJS) $(TESTLIBPATH) $(TESTLIBS) \
+	)
+

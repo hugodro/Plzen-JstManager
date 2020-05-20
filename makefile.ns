@@ -1,0 +1,48 @@
+#/************************************************
+#* File: makefile.
+#* Desc: Building definitions for the Java object archiving library.
+ARCHPATH= $(PLZENHOME)/bins/next_i386
+PROJECT= JstManager
+VERSION= 0.1
+SHORTOBJPATH=../objs_next
+VPATH= $(SHORTOBJPATH)
+
+INC= -I$(PLZENHOME)/include
+CC= cc
+LD=ld
+AR=ar
+RANLIB= ranlib
+
+CFLAGS= -g -DPLZEN_LEVEL_2 -DHACKED_ACCESS -DDEBUG_1
+LDFLAGS=
+
+SRCS= archiver.cc fileArchiver.cc \
+	classTable.cc indexTable.cc entryTable.cc \
+	instanceList.cc
+OBJS= archiver.o fileArchiver.o \
+	classTable.o indexTable.o entryTable.o \
+	instanceList.o
+TESTOBJS= testArch.o
+LIBS= -lg++
+
+.SUFFIXES: .cc .a
+
+TESTLIBPATH= -L$(SHORTOBJPATH) -L$(ARCHPATH)/RunTime
+TESTLIBS= -ljstmgr -lPlzen -lg++
+
+#all: libjstmgr.a
+all: test
+
+libjstmgr.a: $(OBJS)
+	$(AR) cru $(SHORTOBJPATH)/$@ $(OBJS)
+	$(RANLIB) $(SHORTOBJPATH)/$@
+
+
+test: libjstmgr.a $(TESTOBJS)
+	$(CC) $(CFLAGS) -o $(ARCHPATH)/$(PROJECT)/tArch $(TESTOBJS) $(TESTLIBPATH) $(TESTLIBS)
+
+.c.o:
+	$(CC) $(CFLAGS) -o $(ARCHPATH)/$(PROJECT)/$@ -c  $<
+
+.cc.o:
+	$(CC) $(INC) $(CFLAGS) -o $(ARCHPATH)/$(PROJECT)/$@ -c  $<
